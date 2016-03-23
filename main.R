@@ -24,10 +24,16 @@ require(httr)
 require(httpuv)
 require(jsonlite)
 require(base64enc)
-
+library(geosphere)
+library(plyr)
+library(ggplot2)
+library(ggmap)
 # Number of pages to retrieve from YELP.
 # Each page contains 20 rows
-NUM_OF_PAGES <- 1
+NUM_OF_PAGES <- 50
+
+# When you wish to sort the results by distance, use this argument
+YELP_SORT_BY_DISTANCE <- 1
 
 # TODO
 setwd('/Users/hagai_lvi/tmp/data_scientist/assignment_2')
@@ -54,12 +60,13 @@ yelp_query <- function(path, query_args) {
   return(results)
 }
 
-yelp_search <- function(term, location, category_filter, offset=0, limit=20) {
+yelp_search <- function(term, location, category_filter, sort=0, offset=0, limit=20) {
   # Search term and location go in the query string.
   path <- "/v2/search/"
   query_args <- list(term=term,
                      location=location,
                      category_filter=category_filter,
+                     sort=sort,
                      offset=offset,
                      limit=limit)
   
@@ -106,17 +113,46 @@ demo <- function() {
 }
 
 #demo()
-businesses = NULL
-for (offset in 0:(NUM_OF_PAGES-1)) {
-  yelp_search_result <- yelp_search(term="dinner", category_filter="food", location="Boston, MA", offset = offset*20)
-  locationdataContent = content(yelp_search_result)
-  locationdataList=jsonlite::fromJSON(toJSON(locationdataContent))
-  columns = c('name', 'rating', 'review_count')
-  tmp <- subset(locationdataList$businesses, select = columns)
-  businesses <- rbind(businesses, tmp)
+if(! file.exists('data')){
+  dir.create('data')
 }
+
+
+if(! file.exists('./data/business.csv')){
+businesses = NULL
+  for (offset in 0:(NUM_OF_PAGES-1)) {
+    yelp_search_result <- yelp_search(term="food", category_filter="food", location="San Francisco, CA", sort=0, offset = offset*20)
+    locationdataContent = content(yelp_search_result)
+    locationdataList=jsonlite::fromJSON(toJSON(locationdataContent, auto_unbox = TRUE))
+    tmp <- locationdataList$businesses
+    tmp <- data.frame(tmp$name, tmp$rating, tmp$review_count, tmp$location$coordinate$latitude, tmp$location$coordinate$longitude)
+    tmp <- rename(tmp, c("tmp.name"="name", "tmp.rating"="rating", "tmp.review_count"="review_count",
+    "tmp.location.coordinate.latitude"="latitude", "tmp.location.coordinate.longitude"="longitude"))
+    print(nrow(tmp))
+    businesses <- rbind(businesses, tmp)
+    businesses$dist <- sqrt( (abs(businesses$longitude - (-122.4227)))^2 + (abs(businesses$latitude - (37.7770)))^2 )
+    write.table(businesses, file='./data/business.csv')
+  }
+} else{
+  businesses <- read.table('./data/business.csv', header = TRUE)
+}
+
 print('Features: ')
 print(names(businesses))
-library(ggplot2)
 with(businesses, plot(rating, review_count))
+with(businesses, plot(dist, rating))
+
+with(businesses, plot(dist, review_count))
+with(businesses, abline(lm(review_count ~ dist)) )
+
+hist(businesses$dist*1000, main = 'Histogram of amount of restaurants as\na function of distance from the center', xlab = 'Distance(miles)')
+
+# Show all the restaurants on a map:
+map <- get_map(location = c(lon = -122.4250, lat = 37.7550), zoom = 12, maptype = "hybrid", scale = 2)
+ggmap(map) + geom_point(aes(x=longitude, y=latitude), data=businesses)
+
+# A Heat-map that shows the mose "dense" areas
+ggmap(map) + geom_density2d(aes(x=longitude, y=latitude), data = businesses) + stat_density2d(data=businesses,aes(x=longitude, y=latitude, fill = ..level.., alpha = ..level..), size = 0.01, bins = 16, geom = "polygon") + scale_fill_gradient(low = "green", high = "red") + 
+  scale_alpha(range = c(0, 0.3), guide = FALSE)
+
 
