@@ -42,7 +42,7 @@ source('credentials.R')
 
 At first, we are gathering the Data. The code that we are using is:
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, results='hide'}
 yelp_search <- function(term, location, category_filter, sort=0, offset=0, limit=20) {
   # Search term and location go in the query string.
   path <- "/v2/search/"
@@ -109,6 +109,11 @@ cat(sprintf("Number of rows: %i", nrow(businesses)))
 ```
 Note that we have `r nrow(businesses)` rows.  
 
+Head of the table:
+```{r, echo=FALSE}
+head(businesses)
+```
+
 
 Now, some plots:  
 
@@ -149,8 +154,6 @@ We expected that the restaurants that are the closest to the center will have th
 
 ```{r, echo=FALSE}
 hist(businesses$dist*1000, main = 'Histogram of amount of restaurants as\na function of distance from the center', xlab = 'Distance(feet)')
-
-lines(density(businesses$dist*1000))
 ```
   
 The histogram shows that indeed the central area which is at a radius of 30 ft, contains the most restaurants, and as we are getting further from
@@ -159,10 +162,14 @@ This probably is also related to the fact that sea surrounds this area (as can b
 
 -----------
 
-Showing some maps:
-```{r, echo=FALSE, warning=FALSE}
-# Show all the restaurants on a map:
+Relevant maps:
+```{r, include=FALSE, warning=FALSE}
+# Retrieve a map
 map <- get_map(location = c(lon = -122.4250, lat = 37.7550), zoom = 12, maptype = "hybrid", scale = 2)
+```
+  
+```{r, echo=FALSE, warning=FALSE, results='hide'}
+# Show all the restaurants on a map:
 ggmap(map, extent = 'device') + geom_point(aes(x=longitude, y=latitude), data=businesses)
 ```
   
@@ -173,7 +180,6 @@ Here we can see the location of the restaurants that we have retrieved from yelp
 # A Heat-map that shows the most "dense" areas
 ggmap(map, extent='device') + geom_density2d(aes(x=longitude, y=latitude), data = businesses) + stat_density2d(data=businesses,aes(x=longitude, y=latitude, fill = ..level.., alpha = ..level..), size = 0.01, bins = 16, geom = "polygon") + scale_fill_gradient(low = "green", high = "red") + 
   scale_alpha(range = c(0, 0.3), guide = FALSE)
-
 ```
   
 This is a Heat map that shows the central area.  
