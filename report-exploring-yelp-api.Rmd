@@ -34,8 +34,8 @@ NUM_OF_PAGES <- 50
 ```
 
 ```{r, echo=FALSE}
-# TODO
-setwd('/Users/hagai_lvi/tmp/data_scientist/assignment_2')
+wd <- '/Users/hagai_lvi/tmp/data_scientist/assignment_2'
+setwd(wd)
 source('credentials.R')
 ```
 ## Including Plots
