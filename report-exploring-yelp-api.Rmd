@@ -1,0 +1,180 @@
+---
+title: "Exploring YELP API"
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+**At first, please note that if you haven't got the data directory, then the script will need to download the data from Yelp.  
+In order to do so, please go to [yelp developers](https://www.yelp.com/developers/manage_api_keys) and create the credentials,
+then, add your credentials to the `credentials.R.template` file, and rename it to `credentials.R`**  
+
+
+
+```{r, include=FALSE}
+require(httr)
+require(httpuv)
+require(jsonlite)
+require(base64enc)
+library(geosphere)
+library(plyr)
+library(ggplot2)
+library(ggmap)
+```
+
+```{r, echo=FALSE}
+# Define constants:
+
+# Number of pages to retrieve from YELP.
+# Each page contains 20 rows
+NUM_OF_PAGES <- 50
+```
+
+```{r, echo=FALSE}
+# TODO
+setwd('/Users/hagai_lvi/tmp/data_scientist/assignment_2')
+source('credentials.R')
+```
+## Including Plots
+
+At first, we are gathering the Data. The code that we are using is:
+
+```{r, echo=TRUE}
+yelp_search <- function(term, location, category_filter, sort=0, offset=0, limit=20) {
+  # Search term and location go in the query string.
+  path <- "/v2/search/"
+  query_args <- list(term=term,
+                     location=location,
+                     category_filter=category_filter,
+                     sort=sort,
+                     offset=offset,
+                     limit=limit)
+  
+  # Make request.
+  results <- yelp_query(path, query_args)
+  return(results)
+}
+
+yelp_query <- function(path, query_args) {
+  # Use OAuth to authorize the request.
+  myapp <- oauth_app("YELP", key=consumerKey, secret=consumerSecret)
+  sig <- sign_oauth1.0(myapp, token=token, token_secret=token_secret)
+  
+  # Build Yelp API URL.
+  scheme <- "https"
+  host <- "api.yelp.com"
+  yelpurl <- paste0(scheme, "://", host, path)
+  
+  # Make request.
+  results <- GET(yelpurl, sig, query=query_args)
+  
+  # If status is not success, print some debugging output.
+  HTTP_SUCCESS <- 200
+  if (results$status != HTTP_SUCCESS) {
+    print(results)
+  }
+  return(results)
+}
+
+# Create the data dir if it doesn't exist
+if(! file.exists('data')){
+  dir.create('data')
+}
+
+
+if(! file.exists('./data/business.csv')){
+businesses = NULL
+  for (offset in 0:(NUM_OF_PAGES-1)) {
+    yelp_search_result <- yelp_search(term="food", category_filter="food", location="San Francisco, CA", sort=0, offset = offset*20)
+    locationdataContent = content(yelp_search_result)
+    locationdataList=jsonlite::fromJSON(toJSON(locationdataContent, auto_unbox = TRUE))
+    tmp <- locationdataList$businesses
+    tmp <- data.frame(tmp$name, tmp$rating, tmp$review_count, tmp$location$coordinate$latitude, tmp$location$coordinate$longitude)
+    tmp <- rename(tmp, c("tmp.name"="name", "tmp.rating"="rating", "tmp.review_count"="review_count",
+    "tmp.location.coordinate.latitude"="latitude", "tmp.location.coordinate.longitude"="longitude"))
+    print(nrow(tmp))
+    businesses <- rbind(businesses, tmp)
+  }
+  # Add a distance column that is calculated according to the Pythagorean theorem
+  businesses$dist <- sqrt( (abs(businesses$longitude - (-122.4227)))^2 + (abs(businesses$latitude - (37.7770)))^2 )
+  write.csv(businesses, file='./data/business.csv')
+} else{
+  businesses <- read.csv('./data/business.csv', header = TRUE)
+}
+
+cat(sprintf("Number of rows: %i", nrow(businesses)))
+```
+Note that we have `r nrow(businesses)` rows.  
+
+
+Now, some plots:  
+
+```{r, echo=FALSE}
+with(businesses, plot(x = review_count, y = rating, main='Rating as function of # of reviews', xlab= '# of reviews',
+                                                           ylab='rating'))
+# Add trend line
+with(businesses, abline(lm(review_count~rating), col="red"))
+```
+  
+We thought that we would see some trend in this graph, but we couldn't find any.  
+
+-----------------
+
+```{r, echo=FALSE}
+plot(x=businesses$dist*1000, y=businesses$rating, main='Rating as function of distance from the center', xlab="Distance from the center(feet)",
+     ylab="Rating")
+
+# Add trend line
+abline(lm(businesses$dist*1000~businesses$rating), col="red")
+```  
+  
+We expected the rating to be affected by the distance from the center, but it seems like there is no trend in this graph.
+
+------------
+
+```{r, echo=FALSE}
+plot(businesses$dist*1000, businesses$review_count, main='# of reviews as a function of distance from the center',
+                      xlab='Distance from the center(feet)', ylab='# of reviews')
+
+# Add trend line
+abline(lm(businesses$dist*1000~businesses$review_count), col="red")
+```
+  
+We expected that the restaurants that are the closest to the center will have the most reviews, because the most pepole visit there.
+
+--------------------
+
+```{r, echo=FALSE}
+hist(businesses$dist*1000, main = 'Histogram of amount of restaurants as\na function of distance from the center', xlab = 'Distance(feet)')
+
+lines(density(businesses$dist*1000))
+```
+  
+The histogram shows that indeed the central area which is at a radius of 30 ft, contains the most restaurants, and as we are getting further from
+the center the number of restaurants gets smaller.  
+This probably is also related to the fact that sea surrounds this area (as can be seen in the maps below)
+
+-----------
+
+Showing some maps:
+```{r, echo=FALSE, warning=FALSE}
+# Show all the restaurants on a map:
+map <- get_map(location = c(lon = -122.4250, lat = 37.7550), zoom = 12, maptype = "hybrid", scale = 2)
+ggmap(map, extent = 'device') + geom_point(aes(x=longitude, y=latitude), data=businesses)
+```
+  
+Here we can see the location of the restaurants that we have retrieved from yelp on a map
+
+----
+```{r, echo=FALSE, warning=FALSE}
+# A Heat-map that shows the most "dense" areas
+ggmap(map, extent='device') + geom_density2d(aes(x=longitude, y=latitude), data = businesses) + stat_density2d(data=businesses,aes(x=longitude, y=latitude, fill = ..level.., alpha = ..level..), size = 0.01, bins = 16, geom = "polygon") + scale_fill_gradient(low = "green", high = "red") + 
+  scale_alpha(range = c(0, 0.3), guide = FALSE)
+
+```
+  
+This is a Heat map that shows the central area.  
+We can clearly see that indeed there is a central area in which most of the restaurants grouped, as the histogram shows

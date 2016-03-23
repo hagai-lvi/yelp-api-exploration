@@ -130,9 +130,10 @@ businesses = NULL
     "tmp.location.coordinate.latitude"="latitude", "tmp.location.coordinate.longitude"="longitude"))
     print(nrow(tmp))
     businesses <- rbind(businesses, tmp)
-    businesses$dist <- sqrt( (abs(businesses$longitude - (-122.4227)))^2 + (abs(businesses$latitude - (37.7770)))^2 )
     write.table(businesses, file='./data/business.csv')
   }
+  # Add a distance column that is calculated according to the Pythagorean theorem
+  businesses$dist <- sqrt( (abs(businesses$longitude - (-122.4227)))^2 + (abs(businesses$latitude - (37.7770)))^2 )
 } else{
   businesses <- read.table('./data/business.csv', header = TRUE)
 }
