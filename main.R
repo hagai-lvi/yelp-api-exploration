@@ -135,7 +135,7 @@ businesses = NULL
   # Add a distance column that is calculated according to the Pythagorean theorem
   businesses$dist <- sqrt( (abs(businesses$longitude - (-122.4227)))^2 + (abs(businesses$latitude - (37.7770)))^2 )
 } else{
-  businesses <- read.table('./data/business.csv', header = TRUE)
+  businesses <- read.csv('./data/business.csv', header = TRUE)
 }
 
 print('Features: ')

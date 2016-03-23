@@ -109,6 +109,9 @@ cat(sprintf("Number of rows: %i", nrow(businesses)))
 ```
 Note that we have `r nrow(businesses)` rows.  
 
+The available features are `r names(businesses)`   
+
+
 Head of the table:
 ```{r, echo=FALSE}
 head(businesses)
@@ -116,6 +119,15 @@ head(businesses)
 
 
 Now, some plots:  
+
+First box plots for the relevant features:
+```{r}
+par(mfrow=c(1,3))
+boxplot(businesses$rating, main='Rating')
+boxplot(businesses$review_count, main='# of reviews')
+boxplot(businesses$dist*1000, main='Distance(feet)')
+```
+
 
 ```{r, echo=FALSE}
 with(businesses, plot(x = review_count, y = rating, main='Rating as function of # of reviews', xlab= '# of reviews',
@@ -125,6 +137,8 @@ with(businesses, abline(lm(review_count~rating), col="red"))
 ```
   
 We thought that we would see some trend in this graph, but we couldn't find any.  
+We can also use `cor(businesses$review_count, businesses$rating)` and see that the correlation is `r cor(businesses$review_count, businesses$rating)`
+which is negligible.
 
 -----------------
 
@@ -137,6 +151,9 @@ abline(lm(businesses$dist*1000~businesses$rating), col="red")
 ```  
   
 We expected the rating to be affected by the distance from the center, but it seems like there is no trend in this graph.
+Using `cor(...)` we see that also here the correlation is `r cor(businesses$dist*1000, businesses$rating, use="complete")`, which is neglible.
+
+
 
 ------------
 
@@ -148,12 +165,14 @@ plot(businesses$dist*1000, businesses$review_count, main='# of reviews as a func
 abline(lm(businesses$dist*1000~businesses$review_count), col="red")
 ```
   
-We expected that the restaurants that are the closest to the center will have the most reviews, because the most pepole visit there.
+We expected that the restaurants that are the closest to the center will have the most reviews, because the most pepole visit there.  
+The correlation is `r cor(businesses$dist*1000, businesses$review_count, use="complete")`, which again, is neglible.
 
 --------------------
 
 ```{r, echo=FALSE}
 hist(businesses$dist*1000, main = 'Histogram of amount of restaurants as\na function of distance from the center', xlab = 'Distance(feet)')
+rug(businesses$dist*1000)
 ```
   
 The histogram shows that indeed the central area which is at a radius of 30 ft, contains the most restaurants, and as we are getting further from

@@ -84,6 +84,9 @@ cat(sprintf("Number of rows: %i", nrow(businesses)))
 ```
 Note that we have 1000 rows.  
 
+The available features are X, name, rating, review_count, latitude, longitude, dist   
+
+
 Head of the table:
 
 ```
@@ -106,25 +109,43 @@ Head of the table:
 
 Now, some plots:  
 
-![](report-exploring-yelp-api_files/figure-html/unnamed-chunk-6-1.png)
-  
-We thought that we would see some trend in this graph, but we couldn't find any.  
+First box plots for the relevant features:
 
------------------
+```r
+par(mfrow=c(1,3))
+boxplot(businesses$rating, main='Rating')
+boxplot(businesses$review_count, main='# of reviews')
+boxplot(businesses$dist*1000, main='Distance(feet)')
+```
+
+![](report-exploring-yelp-api_files/figure-html/unnamed-chunk-6-1.png)
+
 
 ![](report-exploring-yelp-api_files/figure-html/unnamed-chunk-7-1.png)
   
-We expected the rating to be affected by the distance from the center, but it seems like there is no trend in this graph.
+We thought that we would see some trend in this graph, but we couldn't find any.  
+We can also use `cor(businesses$review_count, businesses$rating)` and see that the correlation is -0.0345124
+which is negligible.
 
-------------
+-----------------
 
 ![](report-exploring-yelp-api_files/figure-html/unnamed-chunk-8-1.png)
   
-We expected that the restaurants that are the closest to the center will have the most reviews, because the most pepole visit there.
+We expected the rating to be affected by the distance from the center, but it seems like there is no trend in this graph.
+Using `cor(...)` we see that also here the correlation is -0.0883661, which is neglible.
+
+
+
+------------
+
+![](report-exploring-yelp-api_files/figure-html/unnamed-chunk-9-1.png)
+  
+We expected that the restaurants that are the closest to the center will have the most reviews, because the most pepole visit there.  
+The correlation is -0.0181856, which again, is neglible.
 
 --------------------
 
-![](report-exploring-yelp-api_files/figure-html/unnamed-chunk-9-1.png)
+![](report-exploring-yelp-api_files/figure-html/unnamed-chunk-10-1.png)
   
 The histogram shows that indeed the central area which is at a radius of 30 ft, contains the most restaurants, and as we are getting further from
 the center the number of restaurants gets smaller.  
@@ -132,15 +153,15 @@ This probably is also related to the fact that sea surrounds this area (as can b
 
 -----------
 
-Showing some maps:
+Relevant maps:
 
   
-![](report-exploring-yelp-api_files/figure-html/unnamed-chunk-11-1.png)
+![](report-exploring-yelp-api_files/figure-html/unnamed-chunk-12-1.png)
   
 Here we can see the location of the restaurants that we have retrieved from yelp on a map
 
 ----
-![](report-exploring-yelp-api_files/figure-html/unnamed-chunk-12-1.png)
+![](report-exploring-yelp-api_files/figure-html/unnamed-chunk-13-1.png)
   
 This is a Heat map that shows the central area.  
 We can clearly see that indeed there is a central area in which most of the restaurants grouped, as the histogram shows
