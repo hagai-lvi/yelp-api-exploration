@@ -15,3 +15,6 @@ For example:
 - First, change the `wd` variable in [report-exploring-yelp-api.Rmd](report-exploring-yelp-api.Rmd) to point your local repository.
 - If you need to get the data from Yelp, check the comment in the top of [report-exploring-yelp-api.Rmd](report-exploring-yelp-api.Rmd).
 - Then import [report-exploring-yelp-api.Rmd](report-exploring-yelp-api.Rmd) to `RStudio` and `"knit"` it.
+
+## Check the results
+View directly in github [here](report-exploring-yelp-api.md)
