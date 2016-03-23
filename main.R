@@ -25,7 +25,11 @@ require(httpuv)
 require(jsonlite)
 require(base64enc)
 
+# Number of pages to retrieve from YELP.
+# Each page contains 20 rows
+NUM_OF_PAGES <- 1
 
+# TODO
 setwd('/Users/hagai_lvi/tmp/data_scientist/assignment_2')
 source('credentials.R')
 
@@ -103,7 +107,7 @@ demo <- function() {
 
 #demo()
 businesses = NULL
-for (offset in 0:1) {
+for (offset in 0:(NUM_OF_PAGES-1)) {
   yelp_search_result <- yelp_search(term="dinner", category_filter="food", location="Boston, MA", offset = offset*20)
   locationdataContent = content(yelp_search_result)
   locationdataList=jsonlite::fromJSON(toJSON(locationdataContent))
