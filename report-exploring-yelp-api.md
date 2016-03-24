@@ -12,7 +12,6 @@ then, add your credentials to the `credentials.R.template` file, and rename it t
 
 
 
-## Including Plots
 
 At first, we are gathering the Data. The code that we are using is:
 

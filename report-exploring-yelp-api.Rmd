@@ -38,7 +38,6 @@ wd <- '/Users/hagai_lvi/tmp/data_scientist/assignment_2'
 setwd(wd)
 source('credentials.R')
 ```
-## Including Plots
 
 At first, we are gathering the Data. The code that we are using is:
 
