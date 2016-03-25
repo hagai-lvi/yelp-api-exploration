@@ -214,10 +214,13 @@ map <- get_map(location = c(lon = -122.4250, lat = 37.7550), zoom = 12, maptype 
   
 ```{r, echo=FALSE, warning=FALSE, results='hide'}
 # Show all the restaurants on a map:
-ggmap(map, extent = 'device') + geom_point(aes(x=longitude, y=latitude), data=businesses)
+ggmap(map, extent = 'device') + geom_point(aes(x=longitude, y=latitude), data=businesses) + 
+  geom_point(data = data.frame(lon = -122.4250, lat = 37.7550), colour = "red")
 ```
   
-Here we can see the location of the restaurants that we have retrieved from yelp on a map
+We can see the location of the restaurants that we have retrieved from yelp on a map.  
+*The red dot marks the center. We have decided to take it because that was the coordinates supllied by google maps for San Francisco.  
+This might not be the best desicion, but we thought that it was good enough for now.*  
 
 ----
 ```{r, echo=FALSE, warning=FALSE}
@@ -228,3 +231,6 @@ ggmap(map, extent='device') + geom_density2d(aes(x=longitude, y=latitude), data 
   
 This is a Heat map that shows the central area.  
 We can clearly see that indeed there is a central area in which most of the restaurants grouped, as the histogram shows
+
+----
+

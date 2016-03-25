@@ -221,7 +221,9 @@ Relevant maps:
   
 ![](report-exploring-yelp-api_files/figure-html/unnamed-chunk-13-1.png)
   
-Here we can see the location of the restaurants that we have retrieved from yelp on a map
+We can see the location of the restaurants that we have retrieved from yelp on a map.  
+*The red dot marks the center. We have decided to take it because that was the coordinates supllied by google maps for San Francisco.  
+This might not be the best desicion, but we thought that it was good enough for now*  
 
 ----
 ![](report-exploring-yelp-api_files/figure-html/unnamed-chunk-14-1.png)
