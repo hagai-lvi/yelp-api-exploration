@@ -182,7 +182,7 @@ abline(lm(businesses$dist~businesses$rating), col="red")
 ![](report-exploring-yelp-api_files/figure-html/unnamed-chunk-9-1.png)
   
 We thought that the rating might be affected by the distance from the center, but it seems like there is no trend in this graph.
-Using `cor(...)` we see that also here the correlation is -0.1490322, which is neglible.
+Using `cor(...)` we see that also here the correlation is -0.1490322, which is negligible.
 
 ------------
 
@@ -197,8 +197,8 @@ abline(lm(businesses$dist~businesses$review_count), col="red")
 
 ![](report-exploring-yelp-api_files/figure-html/unnamed-chunk-10-1.png)
   
-We expected that the restaurants that are the closest to the center will have the most reviews, because the most pepole visit there.  
-The correlation is -0.0175, which again, is neglible.
+We expected that the restaurants that are the closest to the center will have the most reviews, because the most people visit there.  
+The correlation is -0.0175, which again, is negligible.
 
 --------------------
 
@@ -222,11 +222,36 @@ Relevant maps:
 ![](report-exploring-yelp-api_files/figure-html/unnamed-chunk-13-1.png)
   
 We can see the location of the restaurants that we have retrieved from yelp on a map.  
-*The red dot marks the center. We have decided to take it because that was the coordinates supllied by google maps for San Francisco.  
-This might not be the best desicion, but we thought that it was good enough for now*  
+*The red dot marks the center. We have decided to take it because that was the coordinates supplied by Google maps for San Francisco.  
+This might not be the best decision, but we thought that it was good enough for now.*  
 
 ----
+
 ![](report-exploring-yelp-api_files/figure-html/unnamed-chunk-14-1.png)
   
 This is a Heat map that shows the central area.  
 We can clearly see that indeed there is a central area in which most of the restaurants grouped, as the histogram shows
+
+----
+
+## Summary, conclusions and recomendations
+### Summary
+In this excersice we have experienced with accessing a web api from R, gathering and cleaning data, and inferring some
+basic insights about the data.  
+We have also visualized basic data on a map (including locations and a heatmap).  
+
+### Conclusions
+The most interesting graph in our opinion is the histogram. It shows an increase in the number of restaurants
+(because as the radius increases, the area is increased by the power of 2), and then at a certain threshold we 
+get far enough from the center and the number of restaurants is dropping.  
+We also thing that the heat map is really intresting, because it shows in a very clear manner what is "the hottest"
+zone in San Francisco, and it shows clearly how the "heat" reduces gradually.  
+
+This mini resaerch can help tourists gain knowledge about a destination, before even visiting it.
+
+### Recomendations
+- Try and check other cities around the world.
+- Check other fields of Yelp, such as Nightlife and shopping.
+- Try aggregating results from multiple fields together.
+- Check other features, such as food categories to see how they affect the results.
+- Check more advanced topics, for example - how a business's website affects its popularity.
