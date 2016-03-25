@@ -222,8 +222,8 @@ Here we can see the location of the restaurants that we have retrieved from yelp
 ----
 ```{r, echo=FALSE, warning=FALSE}
 # A Heat-map that shows the most "dense" areas
-ggmap(map, extent='device') + geom_density2d(aes(x=longitude, y=latitude), data = businesses) + stat_density2d(data=businesses,aes(x=longitude, y=latitude, fill = ..level.., alpha = ..level..), size = 0.01, bins = 16, geom = "polygon") + scale_fill_gradient(low = "green", high = "red") + 
-  scale_alpha(range = c(0, 0.3), guide = FALSE)
+ggmap(map, extent='device') + geom_density2d(aes(x=longitude, y=latitude), data = businesses) + stat_density2d(data=businesses,aes(x=longitude, y=latitude, fill = ..level.., alpha = ..level..), size = 0.01, bins = 16, geom = "polygon") +
+  scale_fill_gradient(low = "green", high = "red", guide = FALSE) + scale_alpha(range = c(0, 0.3), guide = FALSE)
 ```
   
 This is a Heat map that shows the central area.  
