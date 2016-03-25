@@ -178,7 +178,7 @@ abline(lm(businesses$dist~businesses$rating), col="red")
 ```  
   
 We thought that the rating might be affected by the distance from the center, but it seems like there is no trend in this graph.
-Using `cor(...)` we see that also here the correlation is `r cor(businesses$dist, businesses$rating, use="complete")`, which is neglible.
+Using `cor(...)` we see that also here the correlation is `r cor(businesses$dist, businesses$rating, use="complete")`, which is negligible.
 
 ------------
 
@@ -190,8 +190,8 @@ plot(businesses$dist, businesses$review_count, main='# of reviews as a function 
 abline(lm(businesses$dist~businesses$review_count), col="red")
 ```
   
-We expected that the restaurants that are the closest to the center will have the most reviews, because the most pepole visit there.  
-The correlation is `r cor(businesses$dist, businesses$review_count, use="complete")`, which again, is neglible.
+We expected that the restaurants that are the closest to the center will have the most reviews, because the most people visit there.  
+The correlation is `r cor(businesses$dist, businesses$review_count, use="complete")`, which again, is negligible.
 
 --------------------
 
@@ -219,8 +219,8 @@ ggmap(map, extent = 'device') + geom_point(aes(x=longitude, y=latitude), data=bu
 ```
   
 We can see the location of the restaurants that we have retrieved from yelp on a map.  
-*The red dot marks the center. We have decided to take it because that was the coordinates supllied by google maps for San Francisco.  
-This might not be the best desicion, but we thought that it was good enough for now.*  
+*The red dot marks the center. We have decided to take it because that was the coordinates supplied by Google maps for San Francisco.  
+This might not be the best decision, but we thought that it was good enough for now.*  
 
 ----
 ```{r, echo=FALSE, warning=FALSE}
@@ -233,4 +233,3 @@ This is a Heat map that shows the central area.
 We can clearly see that indeed there is a central area in which most of the restaurants grouped, as the histogram shows
 
 ----
-
