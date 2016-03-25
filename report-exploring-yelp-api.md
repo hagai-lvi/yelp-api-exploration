@@ -62,7 +62,7 @@ calc_dist <- function(i, data){
   if (is.na(data[i, 'latitude']) || is.na(data[i, 'longitude'])){
     NA
   }else{
-    distm(c(data[i, 'longitude'], data[i, 'latitude']), c(-122.4250, 37.7550))
+    distm(c(data[i, 'longitude'], data[i, 'latitude']), c(-122.405766, 37.790244))
   }
 }
 
@@ -119,17 +119,17 @@ Head of the table:
 ##   X                         name rating review_count latitude longitude
 ## 1 1          Hot Sauce and Panko    4.5          669  37.7945 -122.4178
 ## 2 2 Roli Roti Gourmet Rotisserie    4.5         1169  37.7954 -122.3925
-## 3 3                 The Chairman    4.5          246  37.7840 -122.4176
+## 3 3                 The Chairman    4.5          245  37.7840 -122.4176
 ## 4 4         Good Mong Kok Bakery    4.0         1236  37.7955 -122.4085
 ## 5 5                   Lou's Cafe    4.5         1157  37.7804 -122.4731
 ## 6 6 The Italian Homemade Company    4.5          442  37.8018 -122.4119
-##       dist
-## 1 4442.524
-## 2 5329.480
-## 3 3293.284
-## 4 4736.434
-## 5 5090.252
-## 6 5335.731
+##        dist
+## 1 1159.7977
+## 2 1300.4963
+## 3 1251.8049
+## 4  632.5971
+## 5 6024.3558
+## 6 1394.9858
 ```
 
 
@@ -148,9 +148,8 @@ boxplot(businesses$dist, main='Distance(meter)')
   
 - We can see that most of the ratings are at the range [4.0,4.5].  
 - We can also see that most of the restaurants have a really small number of review.
-- Last but not least, we can see that the distance from the center is distributed nicely, where
-approximately half of the restaurants are between 0km to 4km from the center, and half are between
-4km to 8km.
+- Last but not least, we can see that most of the restaurants are at an approximate range of 3km, which sounds as a reasonable radius
+for a central area in a large city.
 
 -----
 
@@ -165,7 +164,7 @@ with(businesses, abline(lm(review_count~rating), col="red"))
 ![](report-exploring-yelp-api_files/figure-html/unnamed-chunk-8-1.png)
   
 We thought that we might see some trend in this graph, but we couldn't find any.  
-We can also use `cor(businesses$review_count, businesses$rating)` and see that the correlation is -0.0328246
+We can also use `cor(businesses$review_count, businesses$rating)` and see that the correlation is -0.0338341
 which is negligible.
 
 -----------------
@@ -182,7 +181,7 @@ abline(lm(businesses$dist~businesses$rating), col="red")
 ![](report-exploring-yelp-api_files/figure-html/unnamed-chunk-9-1.png)
   
 We thought that the rating might be affected by the distance from the center, but it seems like there is no trend in this graph.
-Using `cor(...)` we see that also here the correlation is -0.1490322, which is negligible.
+Using `cor(...)` we see that also here the correlation is -0.0091395, which is negligible.
 
 ------------
 
@@ -198,7 +197,7 @@ abline(lm(businesses$dist~businesses$review_count), col="red")
 ![](report-exploring-yelp-api_files/figure-html/unnamed-chunk-10-1.png)
   
 We expected that the restaurants that are the closest to the center will have the most reviews, because the most people visit there.  
-The correlation is -0.0175, which again, is negligible.
+The correlation is -0.0075228, which again, is negligible.
 
 --------------------
 
@@ -210,7 +209,7 @@ rug(businesses$dist)
 
 ![](report-exploring-yelp-api_files/figure-html/unnamed-chunk-11-1.png)
   
-The histogram shows that indeed the central area which is at a radius of 4-5 km, contains the most restaurants, and as we are getting further from
+The histogram shows that indeed the central area which is at a radius of 2-3 km, contains the most restaurants, and as we are getting further from
 the center the number of restaurants gets smaller.  
 This probably is also related to the fact that sea surrounds this area (as can be seen in the maps below)
 
@@ -222,7 +221,7 @@ Relevant maps:
 ![](report-exploring-yelp-api_files/figure-html/unnamed-chunk-13-1.png)
   
 We can see the location of the restaurants that we have retrieved from yelp on a map.  
-*The red dot marks the center. We have decided to take it because that was the coordinates supplied by Google maps for San Francisco.  
+*The red dot marks the center. We picked it by approximation as it seemed as the most crowded spot.  
 This might not be the best decision, but we thought that it was good enough for now.*  
 
 ----
@@ -230,13 +229,13 @@ This might not be the best decision, but we thought that it was good enough for 
 ![](report-exploring-yelp-api_files/figure-html/unnamed-chunk-14-1.png)
   
 This is a Heat map that shows the central area.  
-We can clearly see that indeed there is a central area in which most of the restaurants grouped, as the histogram shows
+We can clearly see that indeed there is a central area in which most of the restaurants grouped, as the histogram shows.
 
 ----
 
 ## Summary, conclusions and recomendations
 ### Summary
-In this excersice we have experienced with accessing a web api from R, gathering and cleaning data, and inferring some
+In this assignment we have experienced with accessing a web API from R, gathering and cleaning data, and inferring some
 basic insights about the data.  
 We have also visualized basic data on a map (including locations and a heatmap).  
 
@@ -244,10 +243,10 @@ We have also visualized basic data on a map (including locations and a heatmap).
 The most interesting graph in our opinion is the histogram. It shows an increase in the number of restaurants
 (because as the radius increases, the area is increased by the power of 2), and then at a certain threshold we 
 get far enough from the center and the number of restaurants is dropping.  
-We also thing that the heat map is really intresting, because it shows in a very clear manner what is "the hottest"
+We also thing that the heat map is really interesting, because it shows in a very clear manner what is "the hottest"
 zone in San Francisco, and it shows clearly how the "heat" reduces gradually.  
 
-This mini resaerch can help tourists gain knowledge about a destination, before even visiting it.
+This mini research can help tourists gain knowledge about a destination, before even visiting it.
 
 ### Recomendations
 - Try and check other cities around the world.
@@ -255,3 +254,6 @@ This mini resaerch can help tourists gain knowledge about a destination, before 
 - Try aggregating results from multiple fields together.
 - Check other features, such as food categories to see how they affect the results.
 - Check more advanced topics, for example - how a business's website affects its popularity.
+- There seem to be a little trend in the `# of reviews as function of distance from the center` graph,
+might be intresting to select a different center point, and see if it improves the results and makes
+this trendline less ambiguous.

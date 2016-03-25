@@ -87,7 +87,7 @@ calc_dist <- function(i, data){
   if (is.na(data[i, 'latitude']) || is.na(data[i, 'longitude'])){
     NA
   }else{
-    distm(c(data[i, 'longitude'], data[i, 'latitude']), c(-122.4250, 37.7550))
+    distm(c(data[i, 'longitude'], data[i, 'latitude']), c(-122.405766, 37.790244))
   }
 }
 
@@ -150,9 +150,8 @@ boxplot(businesses$dist, main='Distance(meter)')
   
 - We can see that most of the ratings are at the range [4.0,4.5].  
 - We can also see that most of the restaurants have a really small number of review.
-- Last but not least, we can see that the distance from the center is distributed nicely, where
-approximately half of the restaurants are between 0km to 4km from the center, and half are between
-4km to 8km.
+- Last but not least, we can see that most of the restaurants are at an approximate range of 3km, which sounds as a reasonable radius
+for a central area in a large city.
 
 -----
 
@@ -200,7 +199,7 @@ hist(businesses$dist, main = 'Histogram of amount of restaurants as\na function 
 rug(businesses$dist)
 ```
   
-The histogram shows that indeed the central area which is at a radius of 4-5 km, contains the most restaurants, and as we are getting further from
+The histogram shows that indeed the central area which is at a radius of 2-3 km, contains the most restaurants, and as we are getting further from
 the center the number of restaurants gets smaller.  
 This probably is also related to the fact that sea surrounds this area (as can be seen in the maps below)
 
@@ -215,11 +214,11 @@ map <- get_map(location = c(lon = -122.4250, lat = 37.7550), zoom = 12, maptype 
 ```{r, echo=FALSE, warning=FALSE, results='hide'}
 # Show all the restaurants on a map:
 ggmap(map, extent = 'device') + geom_point(aes(x=longitude, y=latitude), data=businesses) + 
-  geom_point(data = data.frame(lon = -122.4250, lat = 37.7550), colour = "red")
+  geom_point(data = data.frame(lon = -122.405766, lat = 37.790244), colour = "red")
 ```
   
 We can see the location of the restaurants that we have retrieved from yelp on a map.  
-*The red dot marks the center. We have decided to take it because that was the coordinates supplied by Google maps for San Francisco.  
+*The red dot marks the center. We picked it by approximation as it seemed as the most crowded spot.  
 This might not be the best decision, but we thought that it was good enough for now.*  
 
 ----
@@ -231,7 +230,7 @@ ggmap(map, extent='device') + geom_density2d(aes(x=longitude, y=latitude), data 
 ```
   
 This is a Heat map that shows the central area.  
-We can clearly see that indeed there is a central area in which most of the restaurants grouped, as the histogram shows
+We can clearly see that indeed there is a central area in which most of the restaurants grouped, as the histogram shows.
 
 ----
 
@@ -256,3 +255,6 @@ This mini research can help tourists gain knowledge about a destination, before 
 - Try aggregating results from multiple fields together.
 - Check other features, such as food categories to see how they affect the results.
 - Check more advanced topics, for example - how a business's website affects its popularity.
+- There seem to be a little trend in the `# of reviews as function of distance from the center` graph,
+might be intresting to select a different center point, and see if it improves the results and makes
+this trendline less ambiguous.
